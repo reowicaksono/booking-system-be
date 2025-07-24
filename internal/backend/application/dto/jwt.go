@@ -8,6 +8,7 @@ import (
 
 type JWTClaims struct {
 	UserId  uint   `json:"user_id"`
+	AdminId uint   `json:"admin_id,omitempty"`
 	Client  string `json:"client"`
 	Role    string `json:"role"`
 	IsLogin bool   `json:"is_login"`
