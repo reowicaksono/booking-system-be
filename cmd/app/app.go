@@ -2,8 +2,11 @@ package app
 
 import (
 	"booking-system/database/migratios"
+	"booking-system/internal/backend/domain/enum"
 	"booking-system/internal/backend/infrastructure/config"
+	"booking-system/internal/backend/interface/router"
 	"booking-system/internal/pkg/drivers"
+	"context"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +16,7 @@ import (
 type App struct {
 	DB     *gorm.DB
 	Router *gin.Engine
+	ctx    context.Context
 }
 
 // DB initializes the database connection
@@ -27,10 +31,24 @@ func (app *App) DBInit() {
 	}
 }
 
-func (app *App) RouterInit() {
-	router := gin.Default()
+func (app *App) RouterInit(ctx context.Context) {
+	routers := gin.Default()
+	app.ctx = ctx
+	app.Router = routers
 
-	app.Router = router
+	ctxWithDb := context.WithValue(ctx, enum.GormCtxKey, app.DB)
+
+	mysqlConfig := &config.MysqlDataConfig{
+		DBHost:     config.GetEnv("DB_HOST", "localhost"),
+		DBPort:     config.GetEnv("DB_PORT", "3306"),
+		DBUser:     config.GetEnv("DB_USER", "root"),
+		DBPassword: config.GetEnv("DB_PASSWORD", ""),
+		DBName:     config.GetEnv("DB_NAME", "booking_system"),
+	}
+
+	ctxWithConfig := context.WithValue(ctxWithDb, enum.ConfigCtxKey, mysqlConfig)
+
+	router.SetupRoutes(ctxWithConfig, routers, app.DB)
 }
 
 func (app *App) Run() {
