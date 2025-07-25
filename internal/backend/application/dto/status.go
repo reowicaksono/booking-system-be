@@ -13,12 +13,16 @@ func (s *ApiStatus) Error() bool {
 }
 
 func (s *ApiStatus) WithReason(reason string) *ApiStatus {
-	s.Message = reason
-	return s
+	return &ApiStatus{
+		Code:       s.Code,
+		Message:    reason,
+		StatusCode: s.StatusCode,
+	}
 }
 
 var (
-	ApiStatusOK                  = &ApiStatus{Code: 0, Message: "OK", StatusCode: http.StatusOK}
+	ApiStatusOK                  = &ApiStatus{Code: 200, Message: "OK", StatusCode: http.StatusOK}
+	ApiStatusCreated             = &ApiStatus{Code: 201, Message: "CREATED", StatusCode: http.StatusCreated}
 	ApiStatusNotFound            = &ApiStatus{Code: 404, Message: "Not Found", StatusCode: http.StatusNotFound}
 	ApiStatusError               = &ApiStatus{Code: 500, Message: "Internal Server Error", StatusCode: http.StatusInternalServerError}
 	ApiStatusBadRequest          = &ApiStatus{Code: 400, Message: "Bad Request", StatusCode: http.StatusBadRequest}
