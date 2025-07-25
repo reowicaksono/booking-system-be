@@ -14,6 +14,7 @@ type MysqlDataConfig struct {
 	DBHost     string
 	DBPort     string
 	DBName     string
+	Secret     string
 }
 
 func GetMysqlDataConfig(dbhost string, dbuser string, dbpassword string, dbport string, dbname string) *MysqlDataConfig {
